@@ -1,17 +1,18 @@
 [package]
-name = "narigama-utils"
+name    = "narigama-utils"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-clap = { version = "4.5.40", features = ["derive"] }
-copypasta = { version = "0.10.2"}
-jiff = { version = "0.2.15"}
-rand = { version = "0.9.1"}
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = { version = "1.0.140"}
-tracing = { version = "0.1.41"}
-tracing-subscriber = { version = "0.3.19"}
-ureq = { version = "3.0.12"}
-url = { version = "2.5.4"}
-uuid = { version = "1.17.0", features = ["v4", "v7"] }
+clap               = { version = "4.5.40", features = ["derive"] }
+copypasta          = { version = "0.10.2" }
+jiff               = { version = "0.2.15" }
+rand               = { version = "0.9.1" }
+serde              = { version = "1.0.219", features = ["derive"] }
+serde_json         = { version = "1.0.140" }
+strum              = { version = "0.27.1", features = ["derive"] }
+tracing            = { version = "0.1.41" }
+tracing-subscriber = { version = "0.3.19" }
+ureq               = { version = "3.0.12" }
+url                = { version = "2.5.4" }
+uuid               = { version = "1.17.0", features = ["v4", "v7"] }

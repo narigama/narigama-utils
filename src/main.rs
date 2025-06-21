@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use copypasta::ClipboardProvider;
 use rand::Rng;
+use strum::{Display, EnumIter, EnumString, IntoEnumIterator};
 use url::Url;
 
 #[derive(Debug, Parser)]
@@ -9,18 +10,62 @@ pub struct Arguments {
     command: Command,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, EnumIter, EnumString, Display)]
 pub enum Command {
+    ConfigEspanso,
+
+    #[strum(serialize = "binary-decode")]
     BinaryDecode,
+
+    #[strum(serialize = "binary-encode")]
     BinaryEncode,
+
+    #[strum(serialize = "format-json")]
     FormatJson,
+
+    #[strum(serialize = "ip")]
     Ip,
+
+    #[strum(serialize = "password")]
     Password,
+
+    #[strum(serialize = "reddit-top")]
     RedditTop,
+
+    #[strum(serialize = "spongebob")]
     Spongebob,
+
+    #[strum(serialize = "timestamp")]
     Timestamp,
+
+    #[strum(serialize = "uuid4")]
     Uuid4,
+
+    #[strum(serialize = "uuid7")]
     Uuid7,
+}
+
+fn config_espanso() -> String {
+    Command::iter()
+        .filter_map(|item| match item {
+            Command::ConfigEspanso => None,
+            item => Some(format!(
+                "
+  - trigger: \":{0}\"
+    replace: \"{{{{output}}}}\"
+    vars:
+      - name: output
+        type: script
+        params:
+          args:
+            - narigama-utils
+            - {0}
+",
+                item
+            )),
+        })
+        .collect::<Vec<String>>()
+        .join("\n")
 }
 
 pub fn now() -> jiff::Zoned {
@@ -140,6 +185,7 @@ pub fn main() {
         .expect("Unable to get contents of clipboard");
 
     let result = match &args.command {
+        Command::ConfigEspanso => config_espanso(),
         Command::BinaryDecode => binary_decode(&input),
         Command::BinaryEncode => binary_encode(&input),
         Command::FormatJson => format_json(&input),
@@ -153,5 +199,7 @@ pub fn main() {
     };
 
     print! {"{}", result.trim()};
-    clipboard.set_contents(result).expect("Unable to set contents of clipboard")
+    clipboard
+        .set_contents(result)
+        .expect("Unable to set contents of clipboard")
 }
