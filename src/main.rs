@@ -46,21 +46,24 @@ pub enum Command {
 }
 
 fn config_espanso() -> String {
+    let exec_path = std::env::current_exe().unwrap();
+
     Command::iter()
         .filter_map(|item| match item {
             Command::ConfigEspanso => None,
             item => Some(format!(
                 "
-  - trigger: \";{0}\"
+  - trigger: \";{1}\"
     replace: \"{{{{output}}}}\"
     vars:
       - name: output
         type: script
         params:
           args:
-            - narigama-utils
             - {0}
+            - {1}
 ",
+                exec_path.display(),
                 item
             )),
         })
