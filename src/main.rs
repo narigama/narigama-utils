@@ -51,7 +51,7 @@ fn config_espanso() -> String {
             Command::ConfigEspanso => None,
             item => Some(format!(
                 "
-  - trigger: \":{0}\"
+  - trigger: \";{0}\"
     replace: \"{{{{output}}}}\"
     vars:
       - name: output
