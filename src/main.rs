@@ -20,6 +20,9 @@ pub enum Command {
     #[strum(serialize = "binary-encode")]
     BinaryEncode,
 
+    #[strum(serialize = "nato-decode")]
+    NatoDecode,
+
     #[strum(serialize = "format-json")]
     FormatJson,
 
@@ -91,6 +94,20 @@ pub fn binary_encode(input: &str) -> String {
         .map(|b| format!("{:0>8}", format!("{b:b}")))
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+pub fn nato_decode(input: &str) -> String {
+    input
+        .trim()
+        .to_lowercase()
+        .split_whitespace()
+        .map(|word| {
+            word.chars()
+                .next()
+                .unwrap_or_else(|| panic!("Could not get first character of a word: {input}"))
+                .to_string()
+        })
+        .collect()
 }
 
 pub fn format_json(input: &str) -> String {
@@ -191,6 +208,7 @@ pub fn main() {
         Command::ConfigEspanso => config_espanso(),
         Command::BinaryDecode => binary_decode(&input),
         Command::BinaryEncode => binary_encode(&input),
+        Command::NatoDecode => nato_decode(&input),
         Command::FormatJson => format_json(&input),
         Command::Ip => get_ip_address(),
         Command::Password => gen_password(&input),
