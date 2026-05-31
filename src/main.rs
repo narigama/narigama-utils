@@ -127,31 +127,27 @@ pub fn gen_password(input: &str) -> String {
 }
 
 pub fn reddit_top(input: &str) -> String {
-    // parse and trim end of path
-    let mut url = Url::parse(input).unwrap();
-    let path_trimmed = url.path().trim_end_matches("/").to_string();
-    url.set_path(&path_trimmed);
+    let url = Url::parse(input).unwrap();
+    let origin = url.origin().ascii_serialization();
 
-    match ["/u/", "/user/"].iter().any(|p| url.path().starts_with(p)) {
-        true => {
-            url.path_segments_mut().unwrap().extend(["submitted"]);
-            url.query_pairs_mut()
-                .append_pair("sort", "top")
-                .finish()
-                .to_string()
-        }
-        false => {
-            if !url.path().contains("/comments/") {
-                url.path_segments_mut().unwrap().extend(["top"]);
-            }
+    let segments: Vec<&str> = url
+        .path_segments()
+        .map(|c| c.filter(|s| !s.is_empty()).collect())
+        .unwrap_or_default();
 
-            url.query_pairs_mut()
-                .append_pair("sort", "top")
-                .append_pair("t", "all")
-                .finish()
-                .to_string()
-        }
+    if let Some(pos) = segments.iter().position(|&s| s == "u" || s == "user")
+        && let Some(&username) = segments.get(pos + 1)
+    {
+        return format!("{}/u/{}/submitted?sort=top&t=all", origin, username);
     }
+
+    if let Some(pos) = segments.iter().position(|&s| s == "r")
+        && let Some(&subreddit) = segments.get(pos + 1)
+    {
+        return format!("{}/r/{}/top?sort=top&t=all", origin, subreddit);
+    }
+
+    input.to_string()
 }
 
 pub fn get_ip_address() -> String {
