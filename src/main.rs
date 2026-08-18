@@ -20,6 +20,9 @@ pub enum Command {
     #[strum(serialize = "binary-encode")]
     BinaryEncode,
 
+    #[strum(serialize = "dedupe")]
+    Dedupe,
+
     #[strum(serialize = "nato-decode")]
     NatoDecode,
 
@@ -34,6 +37,9 @@ pub enum Command {
 
     #[strum(serialize = "reddit-top")]
     RedditTop,
+
+    #[strum(serialize = "sort")]
+    Sort,
 
     #[strum(serialize = "spongebob")]
     Spongebob,
@@ -96,6 +102,21 @@ pub fn binary_encode(input: &str) -> String {
         .join(" ")
 }
 
+pub fn dedupe(input: &str) -> String {
+    let mut seen = std::collections::HashSet::new();
+    let mut result = Vec::new();
+    for term in input.split(',') {
+        let normalized = term
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ");
+        if !normalized.is_empty() && seen.insert(normalized.clone()) {
+            result.push(normalized);
+        }
+    }
+    result.join(", ")
+}
+
 pub fn nato_decode(input: &str) -> String {
     input
         .trim()
@@ -148,6 +169,21 @@ pub fn reddit_top(input: &str) -> String {
     }
 
     input.to_string()
+}
+
+pub fn sort_list(input: &str) -> String {
+    let mut result = Vec::new();
+    for term in input.split(',') {
+        let normalized = term
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ");
+        if !normalized.is_empty() {
+            result.push(normalized);
+        }
+    }
+    result.sort();
+    result.join(", ")
 }
 
 pub fn get_ip_address() -> String {
@@ -204,11 +240,13 @@ pub fn main() {
         Command::ConfigEspanso => config_espanso(),
         Command::BinaryDecode => binary_decode(&input),
         Command::BinaryEncode => binary_encode(&input),
+        Command::Dedupe => dedupe(&input),
         Command::NatoDecode => nato_decode(&input),
         Command::FormatJson => format_json(&input),
         Command::Ip => get_ip_address(),
         Command::Password => gen_password(&input),
         Command::RedditTop => reddit_top(&input),
+        Command::Sort => sort_list(&input),
         Command::Spongebob => spongebob(&input),
         Command::Timestamp => get_iso_timestamp(),
         Command::Uuid4 => gen_uuid4(),
